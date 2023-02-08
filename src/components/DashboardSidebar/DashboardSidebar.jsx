@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react'
 import getJwtData from '../../services/getJwtData'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
 import clsx from "clsx"
 import { NavLink, useLocation, Link } from "react-router-dom"
 import { Fragment, useState } from 'react'
@@ -27,16 +28,42 @@ function classNames(...classes) {
 const DashboardSidebar = ({children}) => {
   let userData = {};
 
+  let orderCountNew = {};
+
 const [test, setTest] = useState(true);
+const [uorder, setUorder]= useState(0)
+const [time, setTime] = useState(Date.now());
+
+
+
 
 
 useEffect(() => {
+
+  const fetch = async() => {
+    let test = await makeRequrestAsUser.get('/orders/countUnhandled',{});
+    setUorder(test.data);
+  }
   const data = async () => {
     userData = await getJwtData;
+    orderCountNew = await makeRequrestAsUser.get('/orders/countUnhandled',{})
+    setUorder(orderCountNew.data);
     setTest(userData);
+    
+    const interval = setInterval(() => 
+      
+    fetch(),
+  
+      5000);
+      
+    
+    return () => {
+      clearInterval(interval);
+    };
   }
 data()
 }, [])
+
 
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const navigation = [
@@ -120,6 +147,13 @@ data()
                           aria-hidden="true"
                         />
                         {item.name}
+                        {item.name === "Comenzi" && uorder > 0 ? 
+                    <>
+                    <div className='absolute ml-[14px] mb-5 h-3 w-3 bg-red-600 rounded-full animate-ping'></div>
+                    <div className='absolute ml-[14px] mb-5 h-3 w-3 bg-red-600 rounded-full opacity-60'></div>
+
+                    </>
+                    : ""}
                       </a>
                     ))}
                   </nav>
@@ -131,7 +165,7 @@ data()
                        
                       </div>
                       <div className="ml-3">
-                        <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">{test.firstName} {test.lastName}</p>
+                      <Link to="/"> <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">{test.firstName} {test.lastName}</p> </Link>
                        <Link to="/"> <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Inapoi la magazin</p> </Link>
                       </div>
                     </div>
@@ -177,10 +211,18 @@ data()
                       aria-hidden="true"
                     />
                     {item.name}
+                    {item.name === "Comenzi" && uorder > 0 ? 
+                    <>
+                    <div className='absolute ml-[14px] mb-5 h-3 w-3 bg-red-600 rounded-full animate-ping'></div>
+                    <div className='absolute ml-[14px] mb-5 h-3 w-3 bg-red-600 rounded-full opacity-60'></div>
+
+                    </>
+                    : ""}
                   
                   </NavLink>
                 ))}
               </nav>
+              <p className='px-6 opacity-50 text-sm font-medium'>Electrikfum ver. 1.0.7.2.23</p>
             </div>
             <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
               <a href="#" className="flex-shrink-0 w-full group block">
@@ -189,7 +231,7 @@ data()
   
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{test.firstName} {test.lastName}</p>
+                  <Link to="/"> <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{test.firstName} {test.lastName}</p> </Link>
                     <Link to="/"> <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">Inapoi la magazin</p> </Link>
                   </div>
                 </div>

@@ -8,20 +8,11 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
-import { makeRequrest } from '../../makeRequest'
 import axios from 'axios'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
+import { makeRequrest } from '../../makeRequest'
 
-const product = {
-    title: "Elf bar 5% apple",
-    price: 29.99,
-    stock: 10,
-    description: "Long long long long looooong description",
-    puffs: 600,
-    hasNic: true,
-    category: "Tigari unica folosinta",
-    isShown: true,
-    img: "../../ELF1.png"
-}
+
 
 const productSchema = Yup.object().shape({
     title: Yup.string().required('Titlul nu poate fi gol'),
@@ -32,6 +23,7 @@ const productSchema = Yup.object().shape({
     hasNic: Yup.boolean(),
     isShown: Yup.boolean(),
     category: Yup.string(),
+    brand: Yup.string(),
 })
 
 
@@ -45,18 +37,17 @@ const [files, setFiles] = useState()
 let product = {}
     useEffect(() => {
       const users = async () => {
-          product = await  makeRequrest.get(`/products/${id}?populate=*`)
-         /* userme = await  axios.get(`http://79.114.48.133/api/users/me`,{
-            headers: {
-              'Authorization' : `Bearer ${token}`
-            }
-          })*/
+          product = await  makeRequrestAsUser.get(`/products/${id}?populate=*`)
          setProductData(product.data.data)
          setProductTitle(product.data.data.attributes.title)
       }
     users()
   }, [])
-console.log(productData)
+
+    const [categories, setCategories] = useState()
+    const [catId, setCatId] = useState();
+    const [brand, setBrand] = useState()
+
     const [editable, setEditable] = useState(false)
     const [editButtonMessage, setEditButtonMessage] = useState("Editeaza")
 
@@ -69,6 +60,18 @@ console.log(productData)
     const { register, handleSubmit, formState } = useForm(formOptions)
     const { errors } = formState
 
+    let catg = {}
+    let brands = {}
+        useEffect(() => {
+          const cat = async () => {
+              catg = await  makeRequrest.get(`/categories?populate=*`)
+              brands = await  makeRequrest.get(`/brands`)
+             setCategories(catg.data.data)
+             setBrand(brands.data.data)
+          }
+        cat()
+      }, [])
+
     function timeout(delay){
         return new Promise(res => setTimeout(res, delay));
     }
@@ -77,19 +80,20 @@ console.log(productData)
         setProductTitle(currentTarget.value)
     }
 
+
     const uploadImage = async (e) => {
         handleSubmit(onSubmit)
         e.preventDefault();
         const formData = new FormData()
         formData.append('files', files[0])
-        makeRequrest.post("/upload",formData)
+        makeRequrestAsUser.post("/upload",formData)
         .then((response)=>{
             const imageId = response.data[0].id
-            makeRequrest.put(`/products/${id}`,{
+            makeRequrestAsUser.put(`/products/${id}`,{
                 data:{
                 img:response.data[0]
             }}).then((response)=>{
-                console.log(response)
+                 window.location.reload(false)
             }).catch((error)=>{
                 console.log(error)
             })
@@ -109,11 +113,16 @@ console.log(productData)
 
     async function onSubmit(data){
         console.log(data)
-        await  makeRequrest.put(`/products/${id}`,{
+        await  makeRequrestAsUser.put(`/products/${id}`,{
             data:{
                 title: data.title,
                 price: data.price,
                 stock: data.stock,
+                description: data.description,
+                puffs: data.puffs,
+                hasNic: data.hasNic,
+                categories: data.category,
+                brand: data.brand,
             }
           })
         handleEdit()
@@ -123,7 +132,7 @@ console.log(productData)
       } 
 
     async function handleDelete(){
-        await  axios.delete(`http://localhost:1337/api/products/${id}`,{
+        await  axios.delete(`https://api.electrikfum.rop/api/products/${id}`,{
             headers: {
               'Authorization' : `Bearer ${token}`
             }})
@@ -293,27 +302,48 @@ console.log(productData)
                     >
                     Upload
                     </button>
-        </div>
+     
 
-                <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="hasNic"
-                        name="hasNic"
-                        type="checkbox"
-                        disabled={!editProduct.editable}
-                        
-                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded disabled:opacity-60 disabled:cursor-not-allowed"
-                      />
-                    </div>
-                    <div className="ml-3 text-sm">
-                      <label htmlFor="isConfirmed" className="font-medium text-gray-700">
-                        Produsul este afisat
-                      </label>
-                      <p className="text-gray-500">Cand este selectat, toata lumea poate comanda produsul.</p>
-                    </div>
-                </div>
-              
+                    <div>
+      <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+        Categorie <div className="invalid-feedback text-red-900">{errors.category?.message}</div>
+      </label>
+      <select
+        
+        {...register('category')}
+        id="category"
+        name="category"
+        disabled={!editProduct.editable}
+        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
+        defaultValue=""
+      >
+        <option value="" selected disabled hidden>Alege</option>
+        {categories?.map((cat) => (
+        <option  value={cat?.id}>{cat?.attributes.title}</option>
+        ))}
+      </select>
+    </div>
+   
+    <div>
+      <label htmlFor="brand" className="block text-sm font-medium text-gray-700">
+        Brand <div className="invalid-feedback text-red-900">{errors.brand?.message}</div>
+      </label>
+      <select
+        id="brand"
+        {...register('brand')}
+        name="brand"
+        disabled={!editProduct.editable}
+        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
+        defaultValue=""
+      >
+         <option value="" selected disabled hidden>Alege</option>
+         {brand?.map((brand) => (
+        <option  value={brand?.id}>{brand.attributes?.title}</option>
+        ))}
+      </select>
+      </div>
+      </div>
+
               <div className="flex justify-end">
               <button
           type="submit"

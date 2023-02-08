@@ -11,28 +11,8 @@ import { makeRequrest } from '../../makeRequest'
 import { useParams } from 'react-router-dom'
 import ReactPDF, { PDFDownloadLink } from '@react-pdf/renderer'
 import PDF from '../PDF'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
 
-const order = { 
-id: 38424,
-firstName: 'Mihai',
-lastName: 'Popescu', 
-email: 'mihai.popescu@gmail.com',
-phone: '0734626732',
-address: 'Aleea X', 
-city: 'Timisoara', 
-county: 'Timis',
-postal: '300454',
-totalPrice: 89.99,
-}
-
-
-
-
-const steps = [
-    { name: 'Comanda Plasata', href: '#', status: 'complete' },
-    { name: 'Comanda Procesata', href: '#', status: 'current' },
-    { name: 'Comanda Livrata', href: '#', status: 'upcoming' },
-  ]
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -44,6 +24,7 @@ const OrdersDetails = () => {
     const [show, setShow] = useState(false)
     const [message, setMessage] = useState('');
 
+    const [trackingNumber, setTrackingNumber] = useState('')
     const [orderData, setOrderData] = useState({});
     const [view, setView] = useState(false);
 
@@ -52,6 +33,9 @@ const OrdersDetails = () => {
     function timeout(delay){
         return new Promise(res => setTimeout(res, delay));
     }
+    const handleChange = ({currentTarget}) => {
+      setTrackingNumber(currentTarget.value)
+  }
     
     async function createNotification(message){
         setShow(true)
@@ -61,22 +45,42 @@ const OrdersDetails = () => {
     }
 
     async function confirmOrder(){
+      console.log(orderData.email);
        await makeRequrest.put("/orders/update",{
+        
            "id": orderData.id,
            "data":{
-               "orderStatus" : "confirmed"
+               "orderStatus" : "confirmed",
+               "orderIdentifier" : orderData.orderIdentifier,
+               "email" : orderData.email,
            }
        }).then(response =>{
         createNotification(`Comanda a fost confirmata!`)
         window.location.reload(false)
        })
+      }
        
+    async function cancelOrder(){
+      await makeRequrest.put("/orders/update",{
+          "id": orderData.id,
+          "data":{
+              "orderStatus" : "cancelled",
+              "orderIdentifier" : orderData.orderIdentifier,
+              "email" : orderData.email,
+          }
+      }).then(response =>{
+       createNotification(`Comanda a fost anulată!`)
+       window.location.reload(false)
+      })
     }
     async function deliverOrder(){
-        await makeRequrest.put("/orders/update",{
+        await makeRequrestAsUser.put("/orders/update",{
             "id": orderData.id,
             "data":{
-                "orderStatus" : "delivered"
+                "orderStatus" : "delivered",
+                "trackingNumber" : trackingNumber,
+                "orderIdentifier" : orderData.orderIdentifier,
+                "email" : orderData.email,
             }
         }).then(response =>{
          createNotification(`Comanda a fost livrata!`)
@@ -106,7 +110,6 @@ const OrdersDetails = () => {
       
     }, [])
 
-console.log(orderData)
 
     return(
        <div className="orderDetails">
@@ -260,7 +263,7 @@ console.log(orderData)
             <h3 className="text-lg font-medium leading-6 text-gray-900"> Produse comandate </h3>
           </div>
          {view ? 
-        <OrderProductsTable products = {orderData?.products} discount = {0} deliver = {10} total={order.totalPrice}
+        <OrderProductsTable products = {orderData?.products} discount = {orderData?.usedVoucher} deliver = {11} total={orderData?.totalPrice}
         />
         : <p> LOADING </p>}
         TOTAL {orderData?.finalPrice?.toFixed(2)} RON
@@ -272,10 +275,13 @@ console.log(orderData)
             <nav className="flex items-center justify-center" aria-label="Progress">
       <p className="text-sm font-medium">
          {orderData?.orderStatus === "placed" ? "Comanda plasata" : ""}
+         {orderData?.orderStatus === "cancelled" ? "Comanda Anulata" : ""}
          {orderData?.orderStatus === "confirmed" ? "Comanda confirmata" : ""}
-         {orderData?.orderStatus === "delivered" ? "Comanda livrata" : ""}{", "}
-         {orderData?.orderType === "online" ? "Platita online cu cardul" : "Plata se va face la livrare"}
-        
+         {orderData?.orderStatus === "delivered" ? `Comanda livrata AWB: ${orderData?.trackingNumber}` : ""}{","}
+         {orderData?.orderType === "online" && orderData?.orderStatus != "cancelled" ? "Platita online cu cardul" : ""}
+         {orderData?.orderType === "delivery" && orderData?.orderStatus != "cancelled" ? "Plata se va face la livrare" : ""}
+
+     
       </p>
       
       
@@ -283,28 +289,19 @@ console.log(orderData)
    <p className="text-sm flex justify-end font-medium opacity-70 italic"> Ultima actualizare: {orderData?.updatedAt}</p>
     </div>
     <div className={orderData?.orderStatus === "confirmed" ? "flex justify-start" : "hidden"}>
-        <PDFDownloadLink document={<PDF />} filenam="factura">
-            {({loading}) =>
-            loading ? (
-                <button
-            disabled
-          className="ml-0 flex flex-col justify-center items-center  py-2 px-2 border border-transparent shadow-sm text-sm font-medium opacity-60 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          <DocumentArrowDownIcon className='h-10'/>
-          Descarca Factura
-        </button>
-            ) : (
-<button
-          type="submit"
-          className="ml-0 flex flex-col justify-center items-center  py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          <DocumentArrowDownIcon className='h-10'/>
-          Descarca Factura
-        </button>
-            )
-            }
-    
-        </PDFDownloadLink>
+    <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                  <label htmlFor="postal-code" className="block text-sm font-medium text-gray-700">
+                    AWB
+                  </label>
+                  <input
+                    type="text"
+                    name="tracking"
+                    onChange={handleChange}
+                    id="tracking"
+                    autoComplete="tracking"
+                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
+                  />
+                </div>
         <button
          onClick={() => deliverOrder()}
           type="submit"
@@ -313,13 +310,16 @@ console.log(orderData)
             <ArrowLongRightIcon className='h-10'/>
           Trimite Comanda
         </button>
+        
     </div>
     <div className={orderData?.orderStatus === "placed" ? "flex justify-start" : "hidden"}>
     <button
           type="submit"
+          onClick={() => cancelOrder()}
           className="ml-0 flex flex-col justify-center items-center  py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
         >
           <XMarkIcon className='h-10'/>
+         
           Anuleaza comanda
         </button>
         <button

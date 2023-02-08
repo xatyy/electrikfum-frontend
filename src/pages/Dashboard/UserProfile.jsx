@@ -8,8 +8,8 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
-import { makeRequrest } from '../../makeRequest'
 import axios from 'axios'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -44,8 +44,8 @@ const UserProfile = () => {
     let userme = {}
     useEffect(() => {
       const users = async () => {
-          user = await  makeRequrest.get(`/users/${id}?populate=role`)
-          userme = await  axios.get(`http://localhost:1337/api/users/me`,{
+          user = await  makeRequrestAsUser.get(`/users/${id}?populate=role`)
+          userme = await  axios.get(`https://api.electrikfum.ro/api/users/me`,{
             headers: {
               'Authorization' : `Bearer ${token}`
             }
@@ -89,7 +89,7 @@ const UserProfile = () => {
       if(me.id === userData.id){
         alert("Nu te poti sterge pe tine!")
       }else{
-        await  axios.delete(`http://localhost:1337/api/users/${id}`,{
+        await  axios.delete(`https://api.electrikfum.ro/api/users/${id}`,{
             headers: {
               'Authorization' : `Bearer ${token}`
             }})
@@ -116,9 +116,8 @@ const UserProfile = () => {
 
   
     async function handlePersonal(data) {
-      console.log(data)
       handleEdit()
-      await  makeRequrest.put(`/users/${id}`,{
+      await  makeRequrestAsUser.put(`/users/${id}`,{
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -132,13 +131,6 @@ const UserProfile = () => {
       window.location.reload(false)
       return false
     } 
-
-    async function onChangeRole(data) {
-        console.log(JSON.stringify(data, null, 4))
-       
-        
-        return false
-      } 
 
     const editUser = {editable};
     return(
@@ -316,53 +308,7 @@ const UserProfile = () => {
             <p className="mt-1 text-sm text-gray-500">A se modifica cu mare atentie</p>
           </div>
           <div className="mt-5 md:mt-0 md:col-span-2">
-            <form onSubmit={handleSubmitDanger(onChangeRole)} className="space-y-6"  method="POST">
-            
-                <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="isBlocked"
-                        name="isBlocked"
-                        {...registerDanger('isBlocked')}
-                        defaultChecked={userData?.blocked}
-                        type="checkbox"
-                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                      />
-                    </div>
-                    <div className="ml-3 text-sm">
-                      <label htmlFor="isBlocked" className="font-medium text-gray-700">
-                        Utilizator blocat
-                      </label>
-                      <p className="text-gray-500">Interzice utilizatorul din a mai plasa comenzi sau accesul la panoul de control.</p>
-                    </div>
-                  </div>   
-                  <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="isConfirmed"
-                        name="isConfirmed"
-                        type="checkbox"
-                        {...registerDanger('isConfirmed')}
-                        defaultChecked={userData?.confirmed}
-                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                      />
-                    </div>
-                    <div className="ml-3 text-sm">
-                      <label htmlFor="isConfirmed" className="font-medium text-gray-700">
-                        Utilizator confirmat
-                      </label>
-                      <p className="text-gray-500">Modifica starea contului. Dezactivarea va forta utilizatorul sa-si confirme contul prin email din nou.</p>
-                    </div>
-                  </div>   
-                <div className="flex  justify-end">
-        <button
-          type="submit"
-          className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Salveaza
-        </button>
-        </div>
-            </form>
+      
           </div>
         </div>
         <div className="flex justify-center">

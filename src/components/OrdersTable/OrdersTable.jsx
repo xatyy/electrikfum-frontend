@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { UserIcon } from '@heroicons/react/24/solid'
 import { makeRequrest } from '../../makeRequest'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
@@ -18,8 +19,8 @@ import { makeRequrest } from '../../makeRequest'
   
     useEffect(() => {
         const order = async () => {
-            orderData = await  makeRequrest.get(`/orders/fetch?offset=${offset}`)
-            count = await  makeRequrest.get(`/orders/count`)
+            orderData = await  makeRequrestAsUser.get(`/orders/fetch?offset=${offset}`)
+            count = await  makeRequrestAsUser.get(`/orders/count`)
            setItems(orderData.data);
            setOrderCount(count.data)
         }
@@ -28,7 +29,7 @@ import { makeRequrest } from '../../makeRequest'
 
 
    
-    console.log(offset)
+
     
     return(
         <div className="ordersTable">
@@ -94,12 +95,21 @@ import { makeRequrest } from '../../makeRequest'
                         <span 
                         className={classNames(
                              item?.orderStatus == "confirmed" ? "inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800"
-
-                        : "inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800")}>
-                          {item?.orderStatus}
+                        : "",
+                        item?.orderStatus == "placed" ? "inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800"
+                        : "",
+                        item?.orderStatus == "cancelled" ? "inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800"
+                        : "",
+                        item?.orderStatus == "delivered" ? "inline-flex rounded-sm bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800"
+                        : "",
+                        )}>
+                          {item?.orderStatus == "placed" ? "Comandă Plasată" : ""}
+                          {item?.orderStatus == "cancelled" ? "Comandă Anulată" : ""}
+                          {item?.orderStatus == "confirmed" ? "Comandă Confirmată" : ""}
+                          {item?.orderStatus == "delivered" ? "LIVRAT" : ""}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item?.value} RON</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item?.finalPrice.toFixed(2)} RON</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <Link to={"../../orders/" + item?.orderIdentifier} className="text-indigo-600 hover:text-indigo-900">
                           Vizualizeaza<span className="sr-only">,  comanda </span>

@@ -11,9 +11,9 @@ export default function Notification({show, onClose, message}) {
             {/* Global notification live region, render this permanently at the end of the document */}
       <div
         aria-live="assertive"
-        className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start"
+        className="fixed inset-0 z-40 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start"
       >
-        <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
+        <div className="w-full flex z-50 flex-col items-center space-y-4 sm:items-end">
           {/* Notification panel, dynamically insert this into the live region when it needs to be displayed */}
           <Transition
             show={show}
@@ -25,7 +25,7 @@ export default function Notification({show, onClose, message}) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+            <div className="max-w-sm w-full z-50 bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
               <div className="p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">

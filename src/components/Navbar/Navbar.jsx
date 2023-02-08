@@ -22,9 +22,10 @@ import AccountDropDown from '../AccountDropDown/AccountDropDown'
 import ShoppingCart from '../ShoppingCart/ShoppingCart'
 import { makeRequrest } from '../../makeRequest'
 import { useEffect } from 'react'
+import BannerAlert from '../BannerAlert/BannerAlert'
+import { Link } from "react-router-dom"
 
 
-const currencies = ['CAD', 'USD', 'AUD', 'EUR', 'GBP']
 const navigation = {
   categories: [
   ],
@@ -44,6 +45,7 @@ function classNames(...classes) {
 export default function Example() {
   const [open, setOpen] = useState(false)
   const [maintenance, setMaintenance] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false)
   let flo = {};
 
    useEffect(() => {
@@ -54,9 +56,20 @@ export default function Example() {
   config()
 }, [])
 
+function handleSearch(){
+  if(openSearch){
+    setOpenSearch(!openSearch)
+  }else{
+    setOpenSearch(!openSearch)
+  }
+}
+
+
+
 
   return (
     <div className="bg-white ">
+  
       {/* Mobile menu */}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="fixed inset-0 flex z-40 lg:hidden" onClose={setOpen}>
@@ -218,8 +231,9 @@ export default function Example() {
               </p>
 
               <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-2">
+              <p className="text-white font-medium">Distribuție: </p>
                 <PhoneIcon className="text-white w-5 h-5" />
-                <p className="text-white font-medium">+40712345678</p>
+                <p className="text-white font-medium">+40 720 981 443</p>
               </div>
             </div>
           </div>
@@ -240,12 +254,14 @@ export default function Example() {
                     </a>
                   </div>
                   <div className="hidden mx-[15rem] lg:flex justify-center ">                 
-                    <label class=" block">
-                    <span class="sr-only">Search</span>
-                    <span class="relative inset-y-0 top-8 flex flex-col items-end px-3 pl-2">
+                    <label className="block">
+                    <span className="sr-only">Search</span>
+                    <span className="relative inset-y-0 top-8 flex flex-col items-end px-3 pl-2">
                         <MagnifyingGlassIcon className="w-6 h-6" aria-hidden="false" />
                     </span>
-                    <input class=" placeholder:text-slate-400 block bg-white w-[23rem] border border-slate-300 rounded-xl py-2  pr-10 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 transition-colors ease-in-out duration-500 focus:ring-1 sm:text-sm" placeholder="Caută..." type="text" name="search"/>
+                    <form action='/search'>
+                    <input className=" placeholder:text-slate-400 block bg-white w-[23rem] border border-slate-300 rounded-xl py-2  pr-10 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 transition-colors ease-in-out duration-500 focus:ring-1 sm:text-sm" placeholder="Caută..." type="text" name=" "/>
+                    </form>
                     </label>
                   </div>
                   {/* Mobile menu and search (lg-) */}
@@ -260,11 +276,12 @@ export default function Example() {
                     </button>
 
                     {/* Search */}
-                    <a href="#" className="ml-2 p-2 text-gray-400 hover:text-gray-500">
+                    <a onClick={handleSearch} className="ml-2 p-2 text-gray-400 hover:text-gray-500">
                       <span className="sr-only">Search</span>
                       
                       <MagnifyingGlassIcon className="w-6 h-6" aria-hidden="true" />
                     </a>
+                    
                   </div>
 
                   {/* Logo (lg-) */}
@@ -274,6 +291,7 @@ export default function Example() {
                       alt=""
                       className="h-8 w-auto"
                     />
+                    
                   </a>
                             
                   <div className="flex-1 flex items-center justify-end">
@@ -283,10 +301,10 @@ export default function Example() {
                       <div className="flex space-x-8">
                     
                         <div className="hidden lg:flex">
-                          <a href="#" className="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                          <div onClick={handleSearch} className="-m-2 p-2 text-gray-400 hover:text-gray-500">
                             <span className="sr-only">Favorite</span>
                             
-                          </a>
+                          </div>
                           
                         </div>
 
@@ -306,8 +324,13 @@ export default function Example() {
               </div>
             </div>
           </div>
+          <div className={!openSearch ? "hidden" : "flex justify-center py-4 xl:hidden"}>
+          <input className=" placeholder:text-slate-400 flex  items-ce bg-white w-[23rem] border border-slate-300 rounded-xl py-2  pr-10 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 transition-colors ease-in-out duration-500 focus:ring-1 sm:text-sm" placeholder="Caută..." type="text" name=" "/>
+
+          </div>
+                   
           {/* Third navigation */}
-          <div className="hidden lg:flex sticky top-10 z-0 bg-white border-b border-gray-200">
+          <div className="hidden lg:flex sticky top-10 -z-0 bg-white border-b border-gray-200">
             
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="">
@@ -441,13 +464,12 @@ export default function Example() {
                         ))}
 
                         {navigation.pages.map((page) => (
-                          <a
+                          <Link to={page.href}
                             key={page.name}
-                            href={page.href}
                             className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800 hover:bg-neutral-200 border-transparent ease-out transition-colors border-2 "
                           >
                             {page.name}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </Popover.Group>

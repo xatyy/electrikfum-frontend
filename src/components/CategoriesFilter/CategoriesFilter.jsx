@@ -11,11 +11,6 @@ import ProductCard from "../ProductCard/ProductCard";
 import ProductsList from "../ProductsList/ProductsList";
 import ProductCardSmallLoading from "../ProductCardSmallLoading/ProductCardSmallLoading";
 
-const sortOptions = [
-    { name: 'Relevante', href: '#', current: true },
-  { name: 'Pret Crescator', href: '#', current: false },
-  { name: 'Pret Descrescator', href: '#', current: false },
-]
 
 
 function classNames(...classes) {
@@ -23,9 +18,25 @@ function classNames(...classes) {
 }
 
 export default function Example ({type}) {
+
+  let sorting;
+
+  const [query] = new URLSearchParams(window.location.search);
+  if(query){
+  sorting = query[1] ?? 0;
+  }
+
+  const sortOptions = [
+    { name: 'Relevante', href: '?sort=relevant', current: sorting == 'relevant' || !query },
+  { name: 'Pret Crescator', href: '?sort=asc', current: sorting == 'asc' },
+  { name: 'Pret Descrescator', href: '?sort=desc', current: sorting == 'desc' },
+]
+
+
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const catId = parseInt(useParams().id);
-  const [sort, setSort] = useState("desc");
+  const [sort, setSort] = useState(sorting == 'relevant' ? 'asc' : sorting ?? 'asc');
   const [selectedSubCats, setSelectedSubCats] = useState([])
   const [selectedBrand, setSelectedBrand] = useState([])
 
@@ -34,6 +45,7 @@ export default function Example ({type}) {
   const {data:brand, loading:brandLoading, error:brandError} = useFetch(`/brands?populate=*`);
   const {data:categ, loading:categload, error:categerr} = useFetch(`/categories?populate=*&[filters][id][$eq]=${catId}`);
   
+
   
 
   const handleChange = (e) => {
@@ -58,13 +70,13 @@ export default function Example ({type}) {
     );
   };
 
-  console.log(selectedBrand)
-  console.log(selectedSubCats)
+
 
   return (
     <div className="categories bg-white">
       <div>
         {/* Mobile filter dialog */}
+        {/*
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
           <Dialog as="div" className="relative z-40 lg:hidden" onClose={setMobileFiltersOpen}>
             <Transition.Child
@@ -102,7 +114,7 @@ export default function Example ({type}) {
                     </button>
                   </div>
 
-                  {/* Filters */}
+                
                   <form className="mt-4 border-t border-gray-200">
                     
                     
@@ -252,7 +264,7 @@ export default function Example ({type}) {
               </Transition.Child>
             </div>
           </Dialog>
-        </Transition.Root>
+        </Transition.Root> */}
 
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-baseline justify-between  pt-12 pb-6">
@@ -304,7 +316,7 @@ export default function Example ({type}) {
                 </Transition>
               </Menu>
 
-              
+           {/*   
               <button
                 type="button"
                 className="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
@@ -313,8 +325,9 @@ export default function Example ({type}) {
                 <span className="sr-only">Filtre</span>
                 <FunnelIcon className="h-5 w-5" aria-hidden="true" />
               </button>
+                              */}
             </div>
-          </div>
+          </div> 
 
           <section aria-labelledby="products-heading" className="pt-6 pb-24">
             <h2 id="products-heading" className="sr-only">

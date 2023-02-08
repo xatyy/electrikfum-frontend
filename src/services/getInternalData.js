@@ -2,7 +2,9 @@ import jwtDecode from "jwt-decode";
 import axios from "axios";
 
  async function getInternalData(){
+    
     const token = window.localStorage.getItem("auth")
+    if(token){
     const {id} = jwtDecode(token);
 
     const userRequest = axios.create({ baseURL: process.env.REACT_APP_API_URL,
@@ -14,6 +16,7 @@ import axios from "axios";
     const response = await userRequest.get('users/me?populate=role')
     
     return(response.data.role.id === 3)
+}else return(false)
 
 
 }

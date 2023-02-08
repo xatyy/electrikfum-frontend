@@ -2,19 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import { UserIcon } from '@heroicons/react/24/solid'
 import { makeRequrest } from '../../makeRequest'
-const people = [
-    {
-        id: 1,
-      name: 'Nume, Prenume',
-      title: '18-10-2022',
-      email: 'test.test@gmail.com',
-      role: 'Membru',
-      status: 'Activat',
-      image:
-        'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    },
-    // More people...
-  ]
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -31,7 +19,7 @@ const people = [
     let user = {}
     useEffect(() => {
       const users = async () => {
-          user = await  makeRequrest.get(`/users`)
+          user = await  makeRequrestAsUser.get(`/users`)
          setUserData(user.data)
          setView(true);
       }
@@ -39,7 +27,6 @@ const people = [
   }, [])
 
 
-  console.log(userData)
  
     return(
         <div className="userstable">
@@ -51,14 +38,7 @@ const people = [
           </p>
         </div>
         
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            disabled={true}
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-neutral-400 px-4 py-2 text-sm opacity-60 font-medium text-white shadow-sm sm:w-auto"
-          >
-            Adauga Utilizator Manual
-          </button>
-        </div>
+      
       </div>
       <div className="mt-8 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

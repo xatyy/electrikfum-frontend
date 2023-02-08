@@ -8,17 +8,24 @@ import { makeRequrest } from '../../makeRequest'
 import requestProduct from "../../hooks/useFetch"
 import {Navigate} from "react-router-dom"
 import authCheck from '../../services/authCheck'
-
+import jwtDecode from 'jwt-decode'
+import Banner from '../../components/BannerAlert/BannerAlert'
 
 const Checkout = (props) => {
 
+
     const products = useSelector(state=>state.cart.products)
-    const transport = 10
-    const discount = 0
+    const transport = 11
     const dispatch = useDispatch()
     let stock = [];
     let stockBlock = 0;
 
+    const isAuthed = authCheck;
+
+
+      
+    const token = window.localStorage.getItem("auth")
+    const {id} = isAuthed ? jwtDecode(token) : ""
 
     const [url, setUrl] = useState("")
     const [data, setData] = useState("")
@@ -34,7 +41,12 @@ const Checkout = (props) => {
     const[phone, setPhone] = useState("")
     const[postalCode, setPostalCode] = useState("")
     const[orderType, setOrderType] = useState("")
-    
+    const[discount, setDiscount] = useState(0)
+    const[voucherCode, setVoucherCode] = useState("")
+    let voucherDisable = !isAuthed
+    const[errMsg, setErrMsg] = useState("")
+    const[usedVoucher, setUsedVoucher] = useState("")
+ 
 
     function timeout(delay){
         return new Promise(res => setTimeout(res, delay));
@@ -46,13 +58,20 @@ const Checkout = (props) => {
             if(stock[item.id] > 0){
             total += item.quantity * item.price;
             }
-            console.log(total)
         });
         return (total);
     }
 
+    async function checkVoucher(e){
+      let voucher = await makeRequrest.get(`/vouchers?filters[code][$eq]=${voucherCode}`)
+      let date = new Date(voucher?.data?.data[0]?.attributes.expire)
+      let today = new Date();
+      if(voucher && date.getTime() > today.getTime() && isAuthed){
+      setDiscount(voucher?.data?.data[0]?.attributes.discount);
+      setUsedVoucher(`${voucherCode}`)
+      }
+    }
 
-    console.log(products)
 
      function checkStock(id){
         const {data, loading, error} = requestProduct(`/products/${id}?populate=*`)
@@ -62,11 +81,7 @@ const Checkout = (props) => {
                 stockBlock = 1;
             }
         })
-
-        console.log(stockBlock)
-        
         return data?.attributes.stock
-
     }
 
     function travel(){
@@ -81,9 +96,11 @@ const Checkout = (props) => {
 
     const finalPrice = () => {
         let total = totalPrice()
-
+        if(total - discount < 250){
         total = total +transport-discount
-
+        }else{
+          total = total -discount
+        }
         return total;
     }
 
@@ -96,7 +113,6 @@ const Checkout = (props) => {
     }
 
     function setParams(e){
-        console.log(e.data.url);
         setUrl(e.data.url);
         setData(e.data.data);
         setEnvKey(e.data.env_key);
@@ -110,7 +126,8 @@ const Checkout = (props) => {
         try{
 
             if(orderType == "online"){
-            const res = await makeRequrest.post("/orders",{
+              if(email && customerFirstName && customerLastName && phone && street && city && county){
+            const res = await makeRequrest.post("/orders/",{
                 email,
             customerFirstName,
             customerLastName,
@@ -121,17 +138,21 @@ const Checkout = (props) => {
             phone,
             postalCode,
             orderType,
+            usedVoucher,
             finalPrice: finalPrice(),
             })
-
             setParams(res);
-
+            setErrMsg("");
             await timeout(1000);
 
             document.formProduct.submit();
+          }else{
+            setErrMsg("Te rugăm să completezi câmpurile obligatorii.")
+          }
         }else{
+          if(email && customerFirstName && customerLastName && phone && street && city && county){
             const res = await makeRequrest.post("/orders/delivery",{
-                email,
+            email,
             customerFirstName,
             customerLastName,
             products,
@@ -141,23 +162,21 @@ const Checkout = (props) => {
             phone,
             postalCode,
             orderType,
+            users_permissions_user: id,
+            usedVoucher,
             finalPrice: finalPrice()
             })
-
-            console.log(res)
+            setErrMsg("");
             let orderId = res.data
-
             window.location.href = `order?orderId=${orderId}`;
-           
+          }else{
+            setErrMsg("Te rugăm să completezi câmpurile obligatorii.")
+          }
         }
-           
-
         }catch(err){
             console.log(err);
         }
     }
-
-    let price = 0;
 
     if(products[0]){
     return(
@@ -233,10 +252,32 @@ const Checkout = (props) => {
                 <dd>{totalPrice().toFixed(2)} RON</dd>
               </div>
 
-              <div className="flex items-center justify-between">
+             
+
+                {totalPrice() < 250 ? 
+                <>
+                 <div className="flex items-center justify-between">
+        
                 <dt>Transport</dt>
                 <dd>{transport.toFixed(2)} RON</dd>
+              
               </div>
+              
+              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-indigo-800">
+              <div class="bg-indigo-600 h-2.5 rounded-full" style={{width: totalPrice()/2.5+'%'}}></div>
+              Adaugă {250-totalPrice()} RON la comandă pentru a beneficia de livrare gratuită!
+             </div>
+             </>
+    :  <>
+    <div className="flex items-center justify-between">
+   <dt>Transport</dt>
+   <dd>0.00 RON</dd>
+   
+ </div>
+ Super! Beneficiezi de transport gratuit!
+ 
+ 
+</> }
 
               <div className={discount ? "flex items-center justify-between" : "hidden"}>
                 <dt>Discount</dt>
@@ -250,7 +291,7 @@ const Checkout = (props) => {
             </dl>
           </div>
         </section>
-
+        
         <section
           aria-labelledby="payment-and-shipping-heading"
           className="py-16 lg:max-w-lg lg:w-full lg:mx-auto lg:pt-0 lg:pb-24 lg:row-start-1 lg:col-start-1"
@@ -266,10 +307,14 @@ const Checkout = (props) => {
                 <h3 id="contact-info-heading" className="text-lg font-medium text-gray-900">
                   Informatii contact
                 </h3>
+                {errMsg ? 
+          <Banner message={errMsg} />
+          : <></>
+}
 
                 <div className="mt-6">
-                  <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
-                    Email address
+                  <label htmlFor="email-address" className="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
+                    Adresă Email
                   </label>
                   <div className="mt-1">
                     <input
@@ -289,7 +334,7 @@ const Checkout = (props) => {
 
                 <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-4 sm:grid-cols-3">
                 <div className="col-span-2">
-                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="first-name" className="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
                       Prenume
                     </label>
                     <div className="mt-1">
@@ -305,7 +350,7 @@ const Checkout = (props) => {
                   </div>
 
                   <div className="col-span-2">
-                    <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="last-name" className="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
                       Nume
                     </label>
                     <div className="mt-1">
@@ -320,7 +365,7 @@ const Checkout = (props) => {
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="phone" className="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
                       Nr. Telefon
                     </label>
                     <div className="mt-1">
@@ -343,8 +388,8 @@ const Checkout = (props) => {
 
                 <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-3">
                   <div className="sm:col-span-3">
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                      Addresa
+                    <label htmlFor="address" className=" after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
+                    Adresa completă
                     </label>
                     <div className="mt-1">
                       <input
@@ -359,8 +404,8 @@ const Checkout = (props) => {
                   </div>
 
                   <div>
-                    <label htmlFor="city" className="block text-sm font-medium text-gray-700">
-                      Oras
+                    <label htmlFor="city" className="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
+                      Oraș
                     </label>
                     <div className="mt-1">
                       <input
@@ -375,8 +420,8 @@ const Checkout = (props) => {
                   </div>
 
                   <div>
-                    <label htmlFor="region" className="block text-sm font-medium text-gray-700">
-                      Judet
+                    <label htmlFor="region" className="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
+                      Județ
                     </label>
                     <div className="mt-1">
                       <input
@@ -392,7 +437,7 @@ const Checkout = (props) => {
 
                   <div>
                     <label htmlFor="postal-code" className="block text-sm font-medium text-gray-700">
-                      Cod Postal
+                      Cod Poștal
                     </label>
                     <div className="mt-1">
                       <input
@@ -409,19 +454,20 @@ const Checkout = (props) => {
               </div>
 
               <div className="mt-10 ">
-                <h3 className="text-lg font-medium text-gray-900">Metoda Plata</h3>
+                <h3 className="text-lg font-medium text-gray-900">Metodă Plată</h3>
                 <div className="justify-start space-x-10 inline-flex">
                 <div className="mt-6 flex items-center">
                   <input
                     id="same-as-shipping"
                     name="orderType"
+                
                     type="radio"
                     onChange={e => setOrderType(e.target.value)}
                     value="online"
                     className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
                   />
                   <div className="ml-2">
-                    <label htmlFor="same-as-shipping" className="text-sm font-medium text-gray-900">
+                    <label  htmlFor="same-as-shipping" className=" text-sm font-medium text-gray-900">
                       Online cu cardul
                     </label>
                   </div>
@@ -444,39 +490,8 @@ const Checkout = (props) => {
                 </div>
               </div>
 
-              <div className="mt-10">
-                <h3 className="text-lg font-medium text-gray-900">Ai un cod voucher?</h3>
-
-                <div className="flex  gap-x-4 sm:grid-cols-3">
-                  <div className="sm:col-span-3">
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                      Cod voucher
-                    </label>
-                    <div className="mt-1 flex space-x-4">
-                      <input
-                        type="text"
-                        id="voucher"
-                        name="voucher"
-                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                      <button
-                  type="submit"
-
-                  className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
-                >
-                  Aplica
-                </button> 
-                    </div>
-                  </div>
-                
-                 
-                   
-                  
-                </div>
-              </div>
-
               <div className="mt-10 flex justify-end pt-6 border-t border-gray-200">
-             
+                
               </div>
             </div>
             <input type="hidden" id="data" name="data" value={data} />
@@ -494,10 +509,6 @@ const Checkout = (props) => {
                 >
                   Plaseaza comanda 
                 </button>
-
-         
-
-          
         </section>
       </div>
     </div>

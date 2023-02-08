@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { UserIcon } from '@heroicons/react/24/solid'
 import { makeRequrest } from '../../makeRequest'
 import { useEffect } from 'react'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
@@ -13,24 +14,29 @@ import { useEffect } from 'react'
 const ProductsTable = () => {
 
     let productData = {};
+    let countData = {};
   
 
     const [items, setItems] = useState();
     const [view, setView] = useState(false)
+    const [count, setCount] = useState(0);
+    const [page, setPage] = useState(1);
 
 
   
     useEffect(() => {
         const order = async () => {
-            productData = await  makeRequrest.get(`/products?populate=*`)
-            console.log(productData.data.data)
+            productData = await  makeRequrest.get(`/products?populate=*&pagination[page]=${page}&pagination[pageSize]=10`)
            setItems(productData.data.data);
            setView(true);
-         
+           countData = await  makeRequrestAsUser.get(`/products/count`)
+           setCount(countData.data)
+
         }
       order()
-    }, [])
+    }, [page])
 
+    console.log(page);
     
     return(
         <div className="productsTable">
@@ -94,7 +100,7 @@ const ProductsTable = () => {
                           
                           <div className="ml-4">
                             <div className="font-medium text-gray-900">{item.attributes.title}</div>
-                            <div className="font-medium text-xs text-gray-500">Cod Produs: {item.productId}</div>
+                            <div className="font-medium text-xs text-gray-500">Cod Produs: {item.id}</div>
                           </div>
                         </div>
                       </td>
@@ -119,11 +125,43 @@ const ProductsTable = () => {
                 </tbody>
                 : <p>LOADING</p>
                         }
-                <tfoot>
-                    <tr>
-                        <td>
-                        </td>
-                     </tr>
+                <tfoot className="bg-white px-4 py-3 flex-wrap-reverse items-center border-t  border-gray-200 sm:px-6">
+        <tr>
+            <td> <div className="hidden justify-end py-3  sm:block">
+        <p className="text-sm px-2 text-gray-700">
+          Se arata de la <span className="font-medium">{page * 10 - 9}</span> pana la <span className="font-medium">{page * 10 > count ? count : page * 10 }</span> din{' '}
+          <span className="font-medium">{count}</span> rezultate
+        </p>
+      </div></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+               
+      <div className="flex-1 flex justify-end sm:justify-end">
+        <button
+              onClick={() => {
+                if(page > 1){
+                setPage(page - 1);
+                }
+               }}
+          className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Inapoi
+        </button>
+        <button
+           onClick={() => {
+            if(page * 10 < count){
+            setPage(page + 1);
+            }
+           }}
+          className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Urmator
+        </button>
+      </div>
+      </td>
+      </tr>
                 </tfoot>
               </table>
             </div>

@@ -13,7 +13,6 @@ const Home = () => {
   
     const data = async () => {
         userData = await getJwtData;
-        console.log(userData)
     }
   
     if(authCheck){

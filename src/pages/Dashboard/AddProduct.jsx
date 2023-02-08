@@ -9,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import FilePreviewer from '../../components/Function/FilePreviewer'
 import { makeRequrest } from '../../makeRequest'
 import { useEffect } from 'react'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
 
 
 const productSchema = Yup.object().shape({
@@ -19,8 +20,8 @@ const productSchema = Yup.object().shape({
     puffs: Yup.number().positive(),
     hasNic: Yup.boolean(),
     category: Yup.number().required('t'),
-    sub_category: Yup.number().required('t'),
-    brand: Yup.number().required('t'),
+    sub_category: Yup.number(),
+    brand: Yup.number(),
 })
 
 
@@ -60,7 +61,6 @@ const AddProduct = () => {
         return new Promise(res => setTimeout(res, delay));
     }
 
-    console.log(catId)
 
     const handleChange = ({currentTarget}) => {
         setProductTitle(currentTarget.value)
@@ -68,7 +68,7 @@ const AddProduct = () => {
 
     const handleChangeCat = ({currentTarget}) => {
         setCatId(currentTarget.value)
-        console.log(catId)
+
     }
 
     const filePickerRef = useRef(null);
@@ -123,7 +123,7 @@ const AddProduct = () => {
 
     async function onSubmit(data) {
         console.log(JSON.stringify(data, null, 4))
-        makeRequrest.post(`/products`,{
+        makeRequrestAsUser.post(`/products`,{
             data:{
             title: data.title,
             price: data.price,
@@ -132,7 +132,6 @@ const AddProduct = () => {
             hasNic: data.hasNic,
             brand: data.brand,
             categories: data.category,
-            sub_categories: data.sub_category,
             puffs: data.puffs
         }}).then((response)=>{
             console.log(response)
@@ -269,26 +268,7 @@ const AddProduct = () => {
         ))}
       </select>
     </div>
-    {catId ?
-    <div>
-      <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-        Subcategorie <div className="invalid-feedback text-red-900">{errors.sub_categories?.message}</div>
-      </label>
-      <select
-        disabled={!catId}
-        id="subcat"
-        name="subcat"
-        {...register('sub_category')}
-        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-        defaultValue=""
-      >
-        <option value="" selected disabled hidden>Alege</option>
-        {categories[catId-1]?.attributes.sub_categories.data?.map((cat) => (
-        <option  value={cat?.id}>{cat?.attributes.title}</option>
-        ))}
-      </select>
-    </div>
-    : <></> }
+   
     <div>
       <label htmlFor="brand" className="block text-sm font-medium text-gray-700">
         Brand <div className="invalid-feedback text-red-900">{errors.brand?.message}</div>
@@ -329,22 +309,7 @@ const AddProduct = () => {
         
       
 
-                <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="isShown"
-                        name="isShown"
-                        type="checkbox"
-                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded disabled:opacity-60 disabled:cursor-not-allowed"
-                      />
-                    </div>
-                    <div className="ml-3 text-sm">
-                      <label htmlFor="isShown" className="font-medium text-gray-700">
-                        Produsul este afisat
-                      </label>
-                      <p className="text-gray-500">Cand este selectat, toata lumea poate comanda produsul.</p>
-                    </div>
-                </div>
+                
               
               <div className="flex justify-end">
               <button

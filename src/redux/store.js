@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import cartReducer from './cartReducer'
 
 import {
@@ -12,6 +12,7 @@ import {
     REGISTER,
 } from "redux-persist"
 import storage from 'redux-persist/lib/storage'
+
 
 const persistConfig = {
     key: 'root',
@@ -28,9 +29,9 @@ export const store = configureStore({
     middleWare: (getDefaultMiddleware) =>
     getDefaultMiddleware({
         serializableCheck:{
-            ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-        }
-    })
+            ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        },
+    }),
 })
 
 export let persistor = persistStore(store)

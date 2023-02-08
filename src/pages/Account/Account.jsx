@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import * as Yup from 'yup'
 import Notification from '../../components/Notification/Notification'
-import Prompt from '../../components/Prompt/Prompt'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect } from 'react'
 import axios from 'axios'
 import { makeRequrest } from '../../makeRequest'
+import { makeRequrestAsUser } from '../../makeRequestAsUser'
 const user = {firstName: "Mihai", lastName:"Popescu", email:"mihai_popescu@gmail.com", phone: "+40723435827", role: "Customer", address:"Aleea X", city:"Timisoara", county:"Timis", postal:"300464", isConfirmed: true, isBlocked:false}
 
 function classNames(...classes) {
@@ -44,12 +44,10 @@ const dangerSchema = Yup.object().shape({
 const Account = () => {
     const [me, setMe] = useState()
     const token = window.localStorage.getItem("auth")
-
-
     let userme = {}
     useEffect(() => {
       const users = async () => {
-          userme = await  axios.get(`http://localhost:1337/api/users/me`,{
+          userme = await  axios.get(process.env.REACT_APP_API_URL+'/users/me',{
             headers: {
               'Authorization' : `Bearer ${token}`
             }
@@ -66,6 +64,7 @@ const Account = () => {
     const [message, setMessage] = useState('');
     const [adminTitle, setAdminTitle] = useState('');
     const [editButtonMessage, setEditButtonMessage] = useState("Editeaza")
+    const [errorMessage, setErrorMessage] = useState('')
 
     const formOptions = { resolver: yupResolver(formScheme)}
     const { register, handleSubmit, formState } = useForm(formOptions)
@@ -92,12 +91,9 @@ const Account = () => {
     }
 
     async function onSubmit(data) {
-        console.log(JSON.stringify(data, null, 4))
         createNotification(`Parola pentru ${user.firstName} a fost modificata!`)
         return false
       } 
-
-   
 
     function handleEdit(){
         if (editable){
@@ -109,10 +105,24 @@ const Account = () => {
         }
     }
 
+    async function handleReset(){
+      await makeRequrest.post('/auth/forgot-password',{
+        email: me.email,
+
+    }).then(response => response.data)
+    .then(data=>{
+      createNotification(`Verifică mail-ul, ți-am trimis codul de resetare!`)
+    })
+    .catch(error =>{
+        let response = JSON.parse(error.response.request.response);
+        setErrorMessage(response.error.message)
+    });
+    }
+
   
     async function handlePersonal(data) {
       handleEdit()
-      await  makeRequrest.put(`/users/${me.id}`,{
+      await  makeRequrestAsUser.put(`/users/${me.id}`,{
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -127,18 +137,7 @@ const Account = () => {
       return false
     } 
 
-    async function onChangeRole(data) {
-        console.log(JSON.stringify(data, null, 4))
-        const dangerAdminMessage = `Suneti siguri ca doriti sa modificati rolul? Promovarea neintentionata a utilizatorului ${user.firstName} ${user.lastName} din ${user.role} in ${data.role} permite unui utilizator normal sa aiba putere asupra acestui magazin. `
-        const dangerAdminTitle = `Stai putin`
-        if(user.role != data.role && data.role == "Administrator"){
-            setShowPrompt(true)
-            setMessage(dangerAdminMessage)
-            setAdminTitle(dangerAdminTitle)
-        }
-        return false
-      } 
-
+   
     const editUser = {editable};
     return(
         <div className="account space-y-4">
@@ -222,8 +221,6 @@ const Account = () => {
                   <div className="block text-sm font-medium text-red-500 invalid-feedback">{error.phone?.message}</div>
                 </div>
 
-
-
                 <div className="col-span-6">
                   <label htmlFor="street-address" className="block text-sm font-medium text-gray-700">
                     Strada
@@ -306,82 +303,29 @@ const Account = () => {
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="md:col-span-1">
             <h3 className="text-lg font-medium leading-6 text-gray-900">Modifica parola </h3>
+            <h3 className="text-md font-medium leading-6 text-gray-900">Vei primi un mail cu instructiuni pentru a schimba parola. </h3>
        </div>
           <div className="mt-5 md:mt-0 md:col-span-2">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" name="password" method="POST">
-              <div className="grid grid-cols-6 gap-6">
-                <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="postal-code" className="block text-sm font-medium text-gray-700 after:content-['*'] after:ml-0.5 after:text-red-500">
-                    Parola noua 
-                  </label>
-                  <input
-                  {...register('password')}
-                    type="password"
-                    name="password"
-                    id="passwords"
-                    
-                    className={`form-control ${errors.password ? 'focus:ring-red-900 focus:border-red-900' : 'focus:ring-green-500 focus:border-green-500'} mt-1  block w-full shadow-sm sm:text-sm border-gray-300 rounded-md`}
-                  />
-                  <div className="block text-sm font-medium text-red-500 invalid-feedback">{errors.confirmPwd?.message}</div>
-                </div>
-                <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="postal-code" className="block text-sm font-medium text-gray-700 after:content-['*'] after:ml-0.5 after:text-red-500">
-                    Repeta parola noua 
-                  </label>
-                  <input
-                  {...register('confirmPwd')}
-                    type="password"
-                    name="confirmPwd"
-                    id="confirmPwd"
-                    
-                    className={`form-control ${errors.confirmPwd ? 'focus:ring-red-900 focus:border-red-900' : 'focus:ring-green-500 focus:border-green-500'} mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md`}
-                  />
-                   <div className="block text-sm font-medium text-red-500 invalid-feedback">{errors.confirmPwd?.message}</div>
-                </div>
+              <div className="grid grid-cols-6 gap-6"> 
                
               </div>
               <div className="flex justify-end">
         <button
-          type="submit"
+          type="button"
+          onClick={handleReset}
           className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Salveaza
-        </button>
-        </div>
-            </form>
-            
-          </div>
-        </div>
-        
-      </div>
-
-      <div className="bg-red-50 border-red-300 shadow border-[1px] px-4 py-5 sm:rounded-lg sm:p-6">
-        <div className="md:grid md:grid-cols-3 md:gap-6">
-          <div className="md:col-span-1">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Danger zone</h3>
-            
-          </div>
-          <div className="mt-5 md:mt-0 md:col-span-2">
-            <form onSubmit={handleSubmitDanger(onChangeRole)} className="space-y-6"  method="POST">
-            
-
-                  
-                <div className="flex justify-end">
-        <button
-          type="submit"
-          className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-        >
-          Sterge Cont
+          Trimite mail
         </button>
         </div>
             </form>
           </div>
         </div>
-      </div>
+      </div>    
       <Notification show={show} message={message} 
     onClose={() => setShow(false)}
     />
-    <Prompt icon={"ShieldExclamationIcon"} open={showPrompt} message={message} title={adminTitle} onExit={() => setShowPrompt(false)} />
     </div>
 
         </div>

@@ -13,7 +13,7 @@ const NewProduct = ({type}) => {
           <h2 className="sr-only">Produse Bestseller</h2>
           
 
-          <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
+          <div className="grid grid-cols-2 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4 lg:grid-rows-1 lg:gap-x-8">
             {error ? "Something went wrong" : (loading
             ? "loading"
             : data?.map((product) => (

@@ -63,10 +63,16 @@ const CheckoutSuccess = () => {
             <div className="bg-white">
       <div className="max-w-3xl mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="max-w-xl">
-          <h1 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Multumim!</h1>
-          <p className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Comanda ta a fost preluata!</p>
+          <h1 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">COMANDĂ {orderData?.orderStatus == "placed" ? "Plasată" :""}
+          {orderData?.orderStatus == "confirmed" ? "Confirmată" :""}
+          {orderData?.orderStatus == "delivered" ? "Livrată" :""}
+          {orderData?.orderStatus == "cancelled" ? "Anulată" :""}
+          </h1>
+          <p className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Comanda ta a fost     {orderData?.orderStatus == "placed" ? "Plasată" :""}      {orderData?.orderStatus == "confirmed" ? "Confirmată" :""}
+          {orderData?.orderStatus == "delivered" ? "Livrată" :""}
+          {orderData?.orderStatus == "cancelled" ? "Anulată" :""}!</p>
           <p className="mt-2 text-base text-gray-500">Comanda #{orderData.orderIdentifier} a fost preluata si in curand va fii livrata la adresa ta!</p>
-
+          <p className="mt-2 text-base text-gray-500">Revino pe această pagină pentru a verifica starea comenzii.</p>
           <dl className="mt-12 text-sm font-medium"> 
             <dt className="text-gray-900"></dt>
             <dd className="text-indigo-600 mt-2"></dd>
@@ -142,9 +148,9 @@ const CheckoutSuccess = () => {
                 </dd>
               </div>
               <div>
-                <dt className="font-medium text-gray-900">Curierat</dt>
+                <dt className="font-medium text-gray-900">AWB</dt>
                 <dd className="mt-2 text-gray-700">
-                  <p>??</p>
+                  <p>{orderData?.trackingNumber}</p>
                 </dd>
               </div>
             </dl>
@@ -165,7 +171,7 @@ const CheckoutSuccess = () => {
               </div>
               <div className="flex justify-between">
                 <dt className="font-medium text-gray-900">Livrare</dt>
-                <dd className="text-gray-700">10.00 RON</dd>
+                <dd className="text-gray-700">{orderData?.finalPrice < 250 ? "11.00 RON" : "0.00 RON"}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="font-medium text-gray-900">Total</dt>

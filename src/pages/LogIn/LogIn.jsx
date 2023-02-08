@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { makeRequrest } from '../../makeRequest'
 import authCheck from '../../services/authCheck';
-
+import Banner from '../../components/BannerAlert/BannerAlert'
 const formSchema = Yup.object().shape({
     email: Yup.string().email().required('Adresa de email nu poate sa fie goala!'),
     password: Yup.string()
@@ -21,7 +21,6 @@ const LogIn = () => {
   const [errorMessage, setErrorMessage] = useState("")
 
   async function onSubmit(data) {
-    console.log(data);
 
     await makeRequrest.post('/auth/local',{
         identifier: data.email,
@@ -47,6 +46,10 @@ const LogIn = () => {
 
     return(
         <div className="login">
+                    {errorMessage ? 
+          <Banner message={errorMessage} />
+          : <></>
+}
             <div className="min-h-full xl:h-[40rem] 2xl:h-[60rem] flex">
         <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">

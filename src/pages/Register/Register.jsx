@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { makeRequrest } from '../../makeRequest'
 import authCheck from '../../services/authCheck';
+import Banner from '../../components/BannerAlert/BannerAlert'
 
 const formSchema = Yup.object().shape({
     firstName: Yup.string().required('Prenumele nu poate fi gol!'),
@@ -31,7 +32,6 @@ const Register = () => {
     const [errorMessage, setErrorMessage] = useState("")
 
     async function onSubmit(data) {
-        console.log(data);
 
         await makeRequrest.post('/auth/local/register',{
             username: data.email,
@@ -41,9 +41,8 @@ const Register = () => {
             lastName: data.lastName,
             password: data.password
         }).then(response =>{
-            console.log("Reusit!")
-            console.log(response.data);
-            window.location.href = "/login";
+            setErrorMessage("")
+            window.location.href = "/confirm";
         }).catch(error =>{
             let response = JSON.parse(error.response.request.response);
             setErrorMessage(response.error.message)
@@ -59,9 +58,15 @@ const Register = () => {
       }
 
 
+
     return(
         <div className="register">
+          {errorMessage ? 
+          <Banner message={errorMessage} />
+          : <></>
+}
             <div className="min-h-full xl:h-[60rem] 2xl:h-[60rem] flex">
+              
         <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
@@ -141,7 +146,7 @@ const Register = () => {
 
                   <div className="col-span-6">
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 after:content-['*'] after:ml-0.5 after:text-red-500">
-                      Email {errorMessage} 
+                      Email  
                     </label>
                     <div className="mt-1">
                       <input

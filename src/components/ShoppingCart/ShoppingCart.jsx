@@ -4,6 +4,7 @@ import { Popover, Dialog, Transition } from '@headlessui/react'
 import {useSelector} from "react-redux"
 import {resetCart} from "../../redux/cartReducer"
 import {useDispatch} from "react-redux"
+import { removeItem } from '../../redux/cartReducer'
 
 export default function ShoppingCart() {
 
@@ -30,10 +31,10 @@ export default function ShoppingCart() {
 
 return(
     <>
-    <Popover className="ml-4 hidden lg:flex text-sm lg:relative  lg:ml-8 z-50">
-    <Popover.Button className="group -m-2 p-2 flex items-center">
+    <Popover className="ml-4 hidden lg:flex text-sm lg:relative  lg:ml-8 z-10">
+    <Popover.Button className="group z-0 -m-2 p-2 flex items-center">
       <ShoppingBagIcon
-        className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
+        className="z-0 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
         aria-hidden="true"
       />
       <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{totalQuantity() >= 500 ? "?!?!?!" : totalQuantity()}</span>
@@ -48,7 +49,7 @@ return(
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <Popover.Panel className="absolute top-16 inset-x-0 mt-px pb-6 bg-white shadow-lg sm:px-2 lg:top-full lg:left-auto lg:right-0 lg:mt-3 lg:-mr-1.5 lg:w-80 lg:rounded-lg lg:ring-1 lg:ring-black lg:ring-opacity-5">
+      <Popover.Panel className="absolute top-16 z-50 inset-x-0 mt-px pb-6 bg-white shadow-lg sm:px-2 lg:top-full lg:left-auto lg:right-0 lg:mt-3 lg:-mr-1.5 lg:w-80 lg:rounded-lg lg:ring-1 lg:ring-black lg:ring-opacity-5">
         <h2 className="sr-only">Shopping Cart</h2>
 
         <form className="max-w-2xl mx-auto px-4">
@@ -80,7 +81,7 @@ return(
           <p className={totalQuantity() > 0 ?"mt-6 text-center":"hidden"}>
             <span onClick={() => dispatch(resetCart())}
             
-            className="text-sm font-medium text-red-600 hover:text-red-500">
+            className="text-sm font-medium cursor-pointer text-red-600 hover:text-red-500">
               Goleste cosul
             </span>
           </p>
@@ -134,7 +135,7 @@ return(
             <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
               <div className="flex-1 overflow-y-auto py-6 px-4 sm:px-6">
                 <div className="flex items-start justify-between">
-                  <Dialog.Title className="text-lg font-medium text-gray-900">Shopping cart</Dialog.Title>
+                  <Dialog.Title className="text-lg font-medium text-gray-900">Coșul meu</Dialog.Title>
                   <div className="ml-3 flex h-7 items-center">
                     <button
                       type="button"
@@ -171,14 +172,15 @@ return(
                               <p className="mt-1 text-sm text-gray-500">{product.color}</p>
                             </div>
                             <div className="flex flex-1 items-end justify-between text-sm">
-                              <p className="text-gray-500">Qty {product.quantity}</p>
+                              <p className="text-gray-500">Cantitate: {product.quantity}</p>
 
                               <div className="flex">
                                 <button
                                   type="button"
+                                  onClick={() => dispatch(removeItem(product.id))}
                                   className="font-medium text-indigo-600 hover:text-indigo-500"
                                 >
-                                  Sterge
+                                  Sterge Produs
                                 </button>
                               </div>
                             </div>
@@ -206,13 +208,13 @@ return(
                 </div>
                 <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                   <p>
-                    or
+                    sau
                     <button
                       type="button"
                       className="font-medium text-indigo-600 hover:text-indigo-500"
                       onClick={() => setOpen(false)}
                     >
-                      Continue Shopping
+                      &nbsp;Continuă cumparaturile
                       <span aria-hidden="true"> &rarr;</span>
                     </button>
                   </p>

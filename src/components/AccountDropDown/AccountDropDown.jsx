@@ -16,6 +16,8 @@ function classNames(...classes) {
 
 const AccountDropDown = () => {
 
+  const token = window.localStorage.getItem("auth")
+
   function deleteToken(){
     localStorage.removeItem("auth");
     window.location.reload(false)
@@ -27,8 +29,10 @@ const AccountDropDown = () => {
 
   useEffect(() => {
     const data = async () => {
+      if(token){
       userData = await getJwtData;
       setTest(userData);
+      }
     }
   data()
 }, [])

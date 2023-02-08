@@ -16,7 +16,7 @@ const Maintenance = () => {
         <body class="h-full">
         ```
       */}
-      <div className="bg-white min-h-full px-4 py-32 sm:px-6 sm:py-32 md:grid md:place-items-center lg:px-8">
+      <div className="bg-white min-h-full px-4 py-32 sm:px-6 sm:py-64 md:grid md:place-items-center lg:px-8">
         <div className="max-w-max mx-auto">
           <main className="sm:flex">
             <p className="text-4xl font-extrabold text-indigo-600 sm:text-5xl">403</p>

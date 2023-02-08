@@ -18,18 +18,14 @@ import { makeRequrestAsUser } from '../../makeRequestAsUser'
     const {id} = jwtDecode(token)
 
     const [items, setItems] = useState();
-    const [offset, setOffset] = useState(0)
-    const [orderCount, setOrderCount] = useState(0)
   
     useEffect(() => {
         const order = async () => {
             orderData = await  makeRequrestAsUser.get(`/orders/fetchMy?id=${id}`)
-            count = await  makeRequrest.get(`/orders/count`)
            setItems(orderData.data);
-           setOrderCount(count.data)
         }
       order()
-    }, [offset])
+    }, [])
 
 
    
@@ -90,10 +86,18 @@ import { makeRequrestAsUser } from '../../makeRequestAsUser'
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <span 
                         className={classNames(
-                             item?.orderStatus == "confirmed" ? "inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800"
-
-                        : "inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800")}>
-                          {item?.orderStatus == "confirmed" ? "Confirmat" : ""}
+                          item?.orderStatus == "confirmed" ? "inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800"
+                          : "",
+                          item?.orderStatus == "placed" ? "inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800"
+                          : "",
+                          item?.orderStatus == "cancelled" ? "inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800"
+                          : "",
+                          item?.orderStatus == "delivered" ? "inline-flex rounded-sm bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800"
+                          : "")}>
+                          {item?.orderStatus == "placed" ? "Comandă Plasată" : ""}
+                          {item?.orderStatus == "cancelled" ? "Comandă Anulată" : ""}
+                          {item?.orderStatus == "confirmed" ? "Comandă Confirmată" : ""}
+                          {item?.orderStatus == "delivered" ? "LIVRAT" : ""}
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item?.finalPrice.toFixed(2)} RON</td>
