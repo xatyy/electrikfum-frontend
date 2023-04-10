@@ -23,6 +23,7 @@ import ShoppingCart from '../ShoppingCart/ShoppingCart'
 import { makeRequrest } from '../../makeRequest'
 import { useEffect } from 'react'
 import BannerAlert from '../BannerAlert/BannerAlert'
+import Banner from '../BannerAnnouncement/BannerAnnouncement'
 import { Link } from "react-router-dom"
 
 
@@ -69,7 +70,7 @@ function handleSearch(){
 
   return (
     <div className="bg-white ">
-  
+ 
       {/* Mobile menu */}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="fixed inset-0 flex z-40 lg:hidden" onClose={setOpen}>

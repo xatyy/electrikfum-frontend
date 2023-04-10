@@ -8,6 +8,7 @@ import { makeRequrest } from '../../makeRequest'
 import requestProduct from "../../hooks/useFetch"
 import {Navigate} from "react-router-dom"
 import authCheck from '../../services/authCheck'
+import getTester from '../../services/getTester'
 import jwtDecode from 'jwt-decode'
 import Banner from '../../components/BannerAlert/BannerAlert'
 
@@ -138,6 +139,7 @@ const Checkout = (props) => {
             phone,
             postalCode,
             orderType,
+            users_permissions_user: id,
             usedVoucher,
             finalPrice: finalPrice(),
             })
@@ -208,12 +210,14 @@ const Checkout = (props) => {
                 </div>
                 ElectrikFum
                 </div>
+           
             <dt onClick={() => travel()} className="text-xs px-2 bg-indigo-300 text-indigo-900 rounded-xl w-[160px] flex font-medium lg:hidden space-y py-4"> <ArrowLeftIcon className="w-4" />Inapoi la cumparaturi</dt>
               <dt className="text-sm font-medium"> Total plata</dt>
               <dd className="mt-1 text-3xl font-extrabold text-white">{finalPrice().toFixed(2)} RON</dd>
             </dl>
 
             <ul role="list" className="text-sm font-medium divide-y divide-white divide-opacity-10">
+              
               {
               products.map((product) => (
                   <>
@@ -286,7 +290,7 @@ const Checkout = (props) => {
 
               <div className="flex items-center justify-between border-t border-white border-opacity-10 text-white pt-6">
                 <dt className="text-base">Total</dt>
-                <dd className="text-base">{finalPrice().toFixed(2)}</dd>
+                <dd className="text-base">{finalPrice().toFixed(2)} RON</dd>
               </div>
             </dl>
           </div>
@@ -320,6 +324,7 @@ const Checkout = (props) => {
                     <input
                       type="email"
                       id="email-address"
+                      required
                       name="email"
                       onChange={e => setEmail(e.target.value)}
                       autoComplete="email"
@@ -340,6 +345,7 @@ const Checkout = (props) => {
                     <div className="mt-1">
                       <input
                         type="text"
+                        required
                         id="first-name"
                         onChange={e => setCustomerFirstName(e.target.value)}
                         name="customerFirstName"
@@ -357,6 +363,7 @@ const Checkout = (props) => {
                       <input
                         type="text"
                         id="last-name"
+                        required
                         onChange={e => setCustomerLastName(e.target.value)}
                         name="customerLastName"
                         autoComplete="family-name"
@@ -371,6 +378,7 @@ const Checkout = (props) => {
                     <div className="mt-1">
                       <input
                         type="text"
+                        required
                         id="phone"
                         onChange={e => setPhone(e.target.value)}
                         name="phone"
@@ -394,6 +402,7 @@ const Checkout = (props) => {
                     <div className="mt-1">
                       <input
                         type="text"
+                        required
                         id="address"
                         onChange={e => setStreet(e.target.value)}
                         name="street"
@@ -410,6 +419,7 @@ const Checkout = (props) => {
                     <div className="mt-1">
                       <input
                         type="text"
+                        required
                         id="city"
                         onChange={e => setCity(e.target.value)}
                         name="city"
@@ -421,11 +431,12 @@ const Checkout = (props) => {
 
                   <div>
                     <label htmlFor="region" className="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-gray-700">
-                      Județ
+                      Județ / Sector
                     </label>
                     <div className="mt-1">
                       <input
                         type="text"
+                        required
                         id="region"
                         onChange={e => setCounty(e.target.value)}
                         name="county"
@@ -460,7 +471,6 @@ const Checkout = (props) => {
                   <input
                     id="same-as-shipping"
                     name="orderType"
-                
                     type="radio"
                     onChange={e => setOrderType(e.target.value)}
                     value="online"

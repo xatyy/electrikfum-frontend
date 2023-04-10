@@ -275,11 +275,13 @@ const OrdersDetails = () => {
             <nav className="flex items-center justify-center" aria-label="Progress">
       <p className="text-sm font-medium">
          {orderData?.orderStatus === "placed" ? "Comanda plasata" : ""}
+         {orderData?.orderStatus === "pending" ? "Comanda a fost plasată dar nu a trecut prin procesul de plată online." : ""}
+         {orderData?.orderStatus === "rejected" ? "Metoda plata respinsa." : ""}
          {orderData?.orderStatus === "cancelled" ? "Comanda Anulata" : ""}
          {orderData?.orderStatus === "confirmed" ? "Comanda confirmata" : ""}
          {orderData?.orderStatus === "delivered" ? `Comanda livrata AWB: ${orderData?.trackingNumber}` : ""}{","}
-         {orderData?.orderType === "online" && orderData?.orderStatus != "cancelled" ? "Platita online cu cardul" : ""}
-         {orderData?.orderType === "delivery" && orderData?.orderStatus != "cancelled" ? "Plata se va face la livrare" : ""}
+         {orderData?.orderType === "online" && orderData?.orderStatus != "cancelled" && orderData?.orderStatus != "pending" && orderData?.orderStatus != "rejected" ? "Platita online cu cardul" : ""}
+         {orderData?.orderType === "delivery" && orderData?.orderStatus != "cancelled" && orderData?.orderStatus != "pending" && orderData?.orderStatus != "rejected" ? "Plata se va face la livrare" : ""}
 
      
       </p>

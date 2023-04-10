@@ -53,10 +53,11 @@ const CheckoutSuccess = () => {
             let d = new Date(orderData.createdAt)
             let dd = new Date();
 
-            if(d.getUTCDate() === dd.getUTCDate() && d.getUTCHours ===  dd.getUTCHours){
+            if(d.getUTCDate() === dd.getUTCDate() && d.getUTCHours ===  dd.getUTCHours && orderData?.orderStatus !== "rejected"){
                 dispatch(resetCart());
             }
-            
+
+            if(orderData?.orderStatus !== "rejected"){
     return(
 
         <div className="checkoutsuccess">
@@ -68,11 +69,13 @@ const CheckoutSuccess = () => {
           {orderData?.orderStatus == "delivered" ? "Livrată" :""}
           {orderData?.orderStatus == "cancelled" ? "Anulată" :""}
           </h1>
-          <p className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Comanda ta a fost     {orderData?.orderStatus == "placed" ? "Plasată" :""}      {orderData?.orderStatus == "confirmed" ? "Confirmată" :""}
+          <p className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">
+            {orderData?.orderStatus == "pending" ? "Comanda ta este in așteptare" : "Comanda ta a fost" } {orderData?.orderStatus == "placed" ? "Plasată" :""}      {orderData?.orderStatus == "confirmed" ? "Confirmată" :""}
           {orderData?.orderStatus == "delivered" ? "Livrată" :""}
           {orderData?.orderStatus == "cancelled" ? "Anulată" :""}!</p>
-          <p className="mt-2 text-base text-gray-500">Comanda #{orderData.orderIdentifier} a fost preluata si in curand va fii livrata la adresa ta!</p>
-          <p className="mt-2 text-base text-gray-500">Revino pe această pagină pentru a verifica starea comenzii.</p>
+          
+          <p className="mt-2 text-base text-gray-500">{orderData?.orderStatus == "pending" ? `Comanda #${orderData.orderIdentifier} este în așteptare, veți primi un mail cu actualizarea comenzii.` : `Comanda #${orderData.orderIdentifier} a fost preluata si in curand va fii livrata la adresa ta!`}</p>
+
           <dl className="mt-12 text-sm font-medium"> 
             <dt className="text-gray-900"></dt>
             <dd className="text-indigo-600 mt-2"></dd>
@@ -184,6 +187,33 @@ const CheckoutSuccess = () => {
     </div>
         </div>
     )
+    }else{
+      return(
+        <div className="checkoutsuccess">
+      <div className="bg-white">
+<div className="max-w-3xl mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+  <div className="max-w-xl">
+    <h1 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">COMANDĂ RESPINSĂ
+    {orderData?.orderStatus == "confirmed" ? "Confirmată" :""}
+    {orderData?.orderStatus == "delivered" ? "Livrată" :""}
+    {orderData?.orderStatus == "cancelled" ? "Anulată" :""}
+    </h1>
+    <p className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Comanda ta nu s-a realizat cu succes.</p>
+    <p className="mt-2 text-base text-gray-500">Comanda #{orderData.orderIdentifier} a fost respinsă pe motiv de nereușirea plații online.</p>
+    <p className="mt-2 text-base text-gray-500">Poți reîncerca realizarea comenzii.</p>
+    <dl className="mt-12 text-sm font-medium"> 
+      <dt className="text-gray-900"></dt>
+      <dd className="text-indigo-600 mt-2"></dd>
+    </dl>
+  </div>
+
+
+</div>
+</div>
+  </div>
+      )
+      
+    }
 }
 
 export default CheckoutSuccess;

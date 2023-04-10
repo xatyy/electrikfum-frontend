@@ -100,13 +100,20 @@ import { makeRequrestAsUser } from '../../makeRequestAsUser'
                         : "",
                         item?.orderStatus == "cancelled" ? "inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800"
                         : "",
+                        item?.orderStatus == "rejected" ? "inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800"
+                        : "",
                         item?.orderStatus == "delivered" ? "inline-flex rounded-sm bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800"
+                        : "",
+                        item?.orderStatus == "pending" ? "inline-flex rounded-sm bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800"
                         : "",
                         )}>
                           {item?.orderStatus == "placed" ? "Comandă Plasată" : ""}
+                          {item?.orderStatus == "pending" ? "Comandă în așteptare" : ""}
                           {item?.orderStatus == "cancelled" ? "Comandă Anulată" : ""}
                           {item?.orderStatus == "confirmed" ? "Comandă Confirmată" : ""}
+                          {item?.orderStatus == "rejected" ? "RESPINS" : ""}
                           {item?.orderStatus == "delivered" ? "LIVRAT" : ""}
+
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item?.finalPrice.toFixed(2)} RON</td>

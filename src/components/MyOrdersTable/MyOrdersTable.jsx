@@ -92,19 +92,32 @@ import { makeRequrestAsUser } from '../../makeRequestAsUser'
                           : "",
                           item?.orderStatus == "cancelled" ? "inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800"
                           : "",
+                          item?.orderStatus == "rejected" ? "inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800"
+                          : "",
+                          item?.orderStatus == "pending" ? "inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800"
+                          : "",
                           item?.orderStatus == "delivered" ? "inline-flex rounded-sm bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800"
                           : "")}>
                           {item?.orderStatus == "placed" ? "Comandă Plasată" : ""}
                           {item?.orderStatus == "cancelled" ? "Comandă Anulată" : ""}
+                          {item?.orderStatus == "rejected" ? "Metodă Plată Respinsă" : ""}
                           {item?.orderStatus == "confirmed" ? "Comandă Confirmată" : ""}
                           {item?.orderStatus == "delivered" ? "LIVRAT" : ""}
+                          {item?.orderStatus == "pending" ? "Comandă în așteptare" : ""}
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item?.finalPrice.toFixed(2)} RON</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <Link to={"../../order/?orderId=" + item?.orderIdentifier} className="text-indigo-600 hover:text-indigo-900">
-                          Vizualizeaza<span className="sr-only">,  comanda </span>
+                      {item?.orderStatus != "pending" ?
+                        <>
+                          <Link to={"../../order/?orderId=" + item?.orderIdentifier} className="text-indigo-600 hover:text-indigo-900">
+                          Vizualizează<span className="sr-only">,  comanda </span>
                         </Link>
+                        </>       
+                            : 
+                        <></>
+                        }
+
                       </td>
                     </tr>
                   ))}
