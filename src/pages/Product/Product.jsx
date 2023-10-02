@@ -157,6 +157,7 @@ const Product = () => {
                
                   <img
                     key={"4"}
+                    alt={data?.attributes.title}
                     src={process.env.REACT_APP_UPLOAD_URL + data?.attributes.img?.data[0].attributes?.url}
                     className={classNames(
                        'lg:col-span-1 items-center lg:ml-24 rounded-xl lg:row-span-1 w-full'
@@ -241,7 +242,7 @@ const Product = () => {
                      <p>Livrare oriunde în țară</p> 
                       </div>
                      <div className='flex-col space-y-[0.5px] text-sm items-center'>
-                    <p>Taxă de livrare - 11 RON pentru comenzi până la 250 RON.</p>  
+                    <p>Taxă de livrare - 19 RON pentru comenzi până la 250 RON.</p>  
                     <p>Livrare gratuită la comenzi de peste 250 RON!</p> 
                      </div>
                     </div>

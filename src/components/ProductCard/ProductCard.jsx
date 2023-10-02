@@ -38,7 +38,7 @@ const ProductCard = ({product}) => {
             product?.attributes.img?.data ? process.env.REACT_APP_UPLOAD_URL + product?.attributes.img?.data[0].attributes?.url
             : process.env.REACT_APP_UPLOAD_URL + "/uploads/null_521f84f056.png"
         }
-        alt=""
+        alt={product?.attributes.title}
         className="w-full h-full object-center object-cover  sm:w-auto sm:h-81 "
       />
     </div>

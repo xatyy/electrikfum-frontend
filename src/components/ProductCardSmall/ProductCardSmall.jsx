@@ -33,11 +33,11 @@ const ProductCardSmall = ({product}) => {
       <Link to={`/product/${product?.id}`}>
     <div className="aspect-w-3 aspect-h-2 bg-white sm:aspect-none sm:h-56">
       <img
+      alt={product?.attributes.title}
         src={
             product?.attributes.img?.data ? process.env.REACT_APP_UPLOAD_URL + product?.attributes.img?.data[0].attributes?.url
             : process.env.REACT_APP_UPLOAD_URL + "/uploads/null_521f84f056.png"
         }
-        alt=""
         className="w-full h-full object-center object-cover px-20  sm:w-auto sm:h-81 "
       />
     </div>
@@ -53,8 +53,9 @@ const ProductCardSmall = ({product}) => {
         <p className="text-base font-medium text-[#5f5f5f]">{product?.attributes.price.toFixed(2)} RON</p>
         
       </div>
-      <div className="flex-1 flex justify-end">
+      <div className="flex-1 flex justify-end ">
          <button
+          className="disabled:opacity-40"
           type="submit"
           onClick={()=>dispatch(addToCart({
             id:product?.id,

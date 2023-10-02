@@ -9,7 +9,7 @@ const ProductsList = ({catId, sort, subCats, brand}) => {
         (item) => `&[filters][brands][id][$eq]=${item}`
     )}&[filters][categories][id]=${catId}${subCats.map(
         (item) => `&[filters][sub_categories][id][$eq]=${item}`
-    )}&sort=price:${sort}`);
+    )}&sort=price:${sort}&pagination[pageSize]=100`);
 
     return(
       <div className="productslist">

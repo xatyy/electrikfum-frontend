@@ -263,7 +263,7 @@ const OrdersDetails = () => {
             <h3 className="text-lg font-medium leading-6 text-gray-900"> Produse comandate </h3>
           </div>
          {view ? 
-        <OrderProductsTable products = {orderData?.products} discount = {orderData?.usedVoucher} deliver = {11} total={orderData?.totalPrice}
+        <OrderProductsTable products = {orderData?.products} discount = {orderData?.usedVoucher} deliver = {19} total={orderData?.totalPrice}
         />
         : <p> LOADING </p>}
         TOTAL {orderData?.finalPrice?.toFixed(2)} RON

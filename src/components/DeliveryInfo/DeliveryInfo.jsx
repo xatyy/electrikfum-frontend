@@ -15,7 +15,7 @@ function classNames(...classes) {
     <li>Costul transportului se adauga automat la comanda ta</li>
     <li>La primul colet neridicat, ne rezervam dreptul de a nu mai expedia in sistem  ramburs, ci doar cu plata efectuata online, prin card bancar</li>
     <li>Cautam in permanenta cele mai bune servicii de curierat rapid pentru a ne perfectiona si pentru a scurta timpul de livrare</li>
-    <li>Coletele vor fi expediate prin firmele de curierat SAMEDAY, DPD, CARGUS</li>
+    <li>Coletele vor fi expediate prin firma de curierat DPD</li>
   </ul>
   <strong>Modalitati de plata: </strong><br>
   <ul>
@@ -26,7 +26,7 @@ function classNames(...classes) {
   <br>
   Taxa de transport:</strong><br>
   <ul>
-    <li>15 lei - CARGUS - pentru comenzile care au valoare pana la 250 lei&nbsp;</li><li>15 lei - SAMEDAY - pentru comenzile care au valoare pana la 250 lei&nbsp;</li><li>18 lei - DPD - pentru comenzile care au valoare pana la 250 lei&nbsp;</li>
+    <li>19 lei - DPD - pentru comenzile care au valoare pana la 250 lei&nbsp;</li>
     <li>GRATUIT - pentru comenzile care au valoare peste 250 lei</li>
   </ul>
   <strong> </strong><p></p><p>

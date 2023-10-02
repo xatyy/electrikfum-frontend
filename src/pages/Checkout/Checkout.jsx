@@ -16,7 +16,7 @@ const Checkout = (props) => {
 
 
     const products = useSelector(state=>state.cart.products)
-    const transport = 11
+    const transport = 19
     const dispatch = useDispatch()
     let stock = [];
     let stockBlock = 0;

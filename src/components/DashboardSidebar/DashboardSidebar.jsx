@@ -222,7 +222,7 @@ data()
                   </NavLink>
                 ))}
               </nav>
-              <p className='px-6 opacity-50 text-sm font-medium'>Electrikfum ver. 1.2.10.4.23</p>
+              <p className='px-6 opacity-50 text-sm font-medium'>Electrikfum ver. 1.2.21.9.20</p>
             </div>
             <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
               <a href="#" className="flex-shrink-0 w-full group block">

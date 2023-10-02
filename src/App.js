@@ -29,6 +29,8 @@ import TAC from "./components/TAC/TAC"
 import GPDR from "./components/GPDR/GPDR"
 import DeliveryInfo from "./components/DeliveryInfo/DeliveryInfo"
 import AgeCheck from "./core/AgeCheck";
+
+
 function App() {
 
   const [maintenance, setMaintenance] = useState(false);

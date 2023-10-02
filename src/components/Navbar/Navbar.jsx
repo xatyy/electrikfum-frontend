@@ -36,6 +36,7 @@ const navigation = {
     { name: 'PUFF BAR OOPS! FĂRĂ NICOTINĂ', href: '../products/3' },
     { name: 'PUFF BAR OOPS! AIR 2%', href: '../products/4' },
     { name: 'PUFF BAR LOST MARY BM 600 2%', href: '../products/5' },
+    { name: 'PUFF BAR OOPS! MESH 2%', href: '../products/6' },
   ],
 }
 

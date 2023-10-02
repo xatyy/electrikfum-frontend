@@ -14,9 +14,7 @@ Termenul de livrare prin curierat rapid este de circa 48 de ore de la confirmare
 Taxa de Transport prin Curier Rapid pentru comenzile cu ramburs este:
 <br><br>
 - Gratuita pentru comenzi cu valoarea mai mare de 250 Lei<br>
-- 15 lei pentru comenzile sub 250 lei - Cargus <br>
-- 15 lei pentru comenzile sub 250 lei - Sameday<br>
-- 18 lei pentru comenzile sub 250 lei - Dpd <br><br>
+- 19 lei pentru comenzile sub 250 lei - Dpd <br><br>
 
 Preturile afisate cat si cheltuielile/taxele suplimentare sunt calculate cu taxa pe valoare adaugata (TVA) inclus.
 <br><br>

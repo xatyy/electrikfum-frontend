@@ -2,7 +2,7 @@
   "name": "client-final",
   "version": "1.0.0",
   "private": true,
-  "homepage":"https://electrikfum.ro",
+  "homepage": "https://electrikfum.ro",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -39,7 +39,6 @@
     "web-vitals": "^2.1.0",
     "yup": "^0.32.11"
   },
-  
   "scripts": {
     "start": "react-scripts start",
     "build": "set \"GENERATE_SOURCEMAP=false\" &&  react-scripts build",

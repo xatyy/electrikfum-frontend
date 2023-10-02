@@ -174,7 +174,7 @@ const CheckoutSuccess = () => {
               </div>
               <div className="flex justify-between">
                 <dt className="font-medium text-gray-900">Livrare</dt>
-                <dd className="text-gray-700">{orderData?.finalPrice < 250 ? "11.00 RON" : "0.00 RON"}</dd>
+                <dd className="text-gray-700">{orderData?.finalPrice < 250 ? "19.00 RON" : "0.00 RON"}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="font-medium text-gray-900">Total</dt>

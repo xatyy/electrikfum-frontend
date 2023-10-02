@@ -17,7 +17,7 @@ import { makeRequrest } from '../../makeRequest'
 const productSchema = Yup.object().shape({
     title: Yup.string().required('Titlul nu poate fi gol'),
     price: Yup.number().positive().required('Pretul nu poate fi gol!'),
-    stock: Yup.number().positive().integer().required('Stocul produsului nu poate fi gol!'),
+    stock: Yup.number().integer().required('Stocul produsului nu poate fi gol!'),
     description: Yup.string().required('Descrierea nu poate fi goala!'),
     puffs: Yup.number().positive(),
     hasNic: Yup.boolean(),
